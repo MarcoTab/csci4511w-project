@@ -138,7 +138,7 @@ void Sudoku::print() {
 	putchar('\n');
 }
 
-void Sudoku::build_challenge(std::string str) {
+void Sudoku::board_from_string(std::string str) {
 
 	int row = 0;
 	int col = 0;
@@ -170,6 +170,14 @@ void Sudoku::build_challenge(std::string str) {
 	}
 }
 
+void Sudoku::backtrack_solve() {
+	backtrack_helper(0,0);
+}
+
+void Sudoku::dlx_solve() {
+	std::cout << "dlx solve" << std::endl;
+}
+
 // private methods
 void Sudoku::error(std::string msg) {
 	std::cerr << msg << std::endl;
@@ -181,4 +189,71 @@ void Sudoku::fill_zeroes(int* list, int length) {
 	for (int i = 0; i < length; i++) {
 		list[i] = 0;
 	}
+}
+
+// return true if should backtrack
+bool Sudoku::backtrack_helper(char row, char col) {
+
+	if (row >= 9 || col >= 9) {
+		error("row or column out of range");
+		return true;
+	}
+
+	// if the number is already filled in
+	if (board[row][col] != 0) {
+		// overflow check
+		if (col < (COLUMNS - 1)) {
+			return backtrack_helper(row, col+1);
+		}
+		else if (row < (ROWS - 1)) {
+			return backtrack_helper(row + 1, 0);
+		}
+		else {
+			return true;
+		}
+	}
+	else {
+		for (int num = 1; num <= ROWS; num++) {
+			if (pointIsValid(row, col, num)) {
+				board[row][col] = num;
+
+				if (col < 8) {
+					if (backtrack_helper(row, col+1)) {
+						return true;
+					}
+					else {
+						board[row][col] = 0;
+					}
+				}
+				else if (row < 8) {
+					if (backtrack_helper(row+1, 0)) {
+						return true;
+					}
+					else {
+						board[row][col] = 0;
+					}
+				}
+				else {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+bool Sudoku::pointIsValid(int row, int col, char value) {
+
+	for (int i = 0; i < ROWS; i++) {
+		if (board[row][i] == value) {
+			return false;
+		}
+		if (board[i][col] == value) {
+			return false;
+		}
+		if (board[row - (row % 3) + (i / 3)][col - (col % 3) + (i % 3)] == value) {
+			return false;
+		}
+	}
+	return true;
 }

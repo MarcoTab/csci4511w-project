@@ -6,20 +6,29 @@
 
 #include <stdio.h>
 #include <iostream>
+#include "dlx.h"
 
 class Sudoku {
 	public:
 		char board[ROWS][COLUMNS];
+		enum sudoku_ret {
+			SUDOKU_ERROR
+		};
 
 		Sudoku();
 
 		bool validate();
 		void print();
-		void build_challenge(std::string str);
+		void board_from_string(std::string str);
+
+		// solvers
+		void backtrack_solve();
+		void dlx_solve();
 
 	private:
 		void error(std::string msg);
 		void fill_zeroes(int* list, int length);
+		bool backtrack_helper(char row, char col);
+		bool pointIsValid(int row, int col, char value);
 };
-
 #endif //end SUDOKU_H header guard
