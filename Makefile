@@ -38,3 +38,6 @@ testbacktrack: ./backtrack
 
 testdlx: ./dlx
 	./dlx ./input/random-small
+
+testharm: ./harmony
+	./harmony ./input/random-small
