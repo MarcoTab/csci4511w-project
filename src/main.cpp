@@ -70,7 +70,17 @@ int main(int argc, char **argv) {
 
 	// save times to file
 	std::ofstream csv;
-	csv.open("./output/data.csv", std::ios_base::app);
+	std::string datafname;
+	switch (alg) {
+		case DLX:
+			datafname = std::string("output/data-dlx.csv");
+			break;
+		case BACKTRACK:
+			datafname = std::string("output/data-backtrack.csv");
+			break;
+	}
+
+	csv.open(datafname, std::ios_base::app);
 	line = "";
 	line.append(argv[0]);
 	line.append(",");
