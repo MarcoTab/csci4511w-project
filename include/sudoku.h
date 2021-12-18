@@ -18,9 +18,12 @@ class Sudoku {
 		void print();
 		void board_from_string(std::string str);
 
+		// for dlx
+		void to_char_array(char *data);
+		void from_char_array(char *data);
+
 		// solvers
 		void backtrack_solve();
-		void dlx_solve();
 
 	private:
 		void error(std::string msg);

@@ -4,6 +4,7 @@
 #include <vector>
 #include <time.h>
 #include "sudoku.h"
+#include "sudoku_solver.h"
 
 enum algs {
 	DLX,
@@ -40,13 +41,19 @@ int main(int argc, char **argv) {
 	// read lines
 	while (std::getline(infile, line)) {
 		// run appropriate function
+		char data[82];
 		s.board_from_string(line);
+		s.to_char_array(data);
+		sudoku_GJK::Sudoku<3> sdku(data);
 		
 		switch (alg) {
 			case DLX:
 				startTime = clock();
-				s.dlx_solve();
+				sdku.solve();
 				endTime = clock();
+				//s.from_char_array(data);
+				//s.print();
+				sdku.display_ASCII();
 				runTimes.push_back(endTime - startTime);
 				break;
 
@@ -55,16 +62,16 @@ int main(int argc, char **argv) {
 				s.backtrack_solve();
 				endTime = clock();
 				runTimes.push_back(endTime - startTime);
+				s.print();
+				if (!s.validate()) {
+					std::cerr << "failed to validate" << std::endl;
+					exit(EXIT_FAILURE);
+				}
 				break;
 
 			default:
 				std::cerr << "invalid algorithm selected" << std::endl;
 				exit(EXIT_FAILURE);
-		}
-		s.print();
-		if (!s.validate()) {
-			std::cerr << "failed to validate" << std::endl;
-			exit(EXIT_FAILURE);
 		}
 	}
 

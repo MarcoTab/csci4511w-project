@@ -178,12 +178,27 @@ void Sudoku::board_from_string(std::string str) {
 	}
 }
 
-void Sudoku::backtrack_solve() {
-	backtrack_helper(0,0);
+void Sudoku::to_char_array(char *data) {
+	int dataIndex = 0;
+	for (int row = 0; row < ROWS; row++) {
+		for (int col = 0; col < COLUMNS; col++) {
+			data[dataIndex++] = ('0' + board[row][col]);
+		}
+	}
+	data[dataIndex] = '\0';
 }
 
-void Sudoku::dlx_solve() {
-	std::cout << "dlx solve" << std::endl;
+void Sudoku::from_char_array(char *data) {
+	int dataIndex = 0;
+	for (int row = 0; row < ROWS; row++) {
+		for (int col = 0; col < COLUMNS; col++) {
+			board[row][col] = (data[dataIndex++] - '0');
+		}
+	}
+}
+
+void Sudoku::backtrack_solve() {
+	backtrack_helper(0,0);
 }
 
 // private methods
