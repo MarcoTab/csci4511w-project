@@ -2,7 +2,8 @@ TARGET := ./dlx
 BUILD := ./build
 SOURCES := ./src
 OUTPUT := $(TARGET)
-SYMLINK := ./backtrack
+BACKTRACK := ./backtrack
+HARMONY := ./harmony
 
 CFILES := $(wildcard $(SOURCES)/*.cpp)
 OFILES := $(CFILES:$(SOURCES)/%.cpp=$(BUILD)/%.o)
@@ -13,13 +14,13 @@ CC := g++
 
 .PHONY: all clean
 
-all: $(BUILD) $(OUTPUT) $(SYMLINK)
+all: $(BUILD) $(OUTPUT) $(BACKTRACK) $(HARMONY)
 
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
 
 clean:
-	rm -rf $(BUILD) $(TARGET) $(SYMLINK)
+	rm -rf $(BUILD) $(TARGET) $(BACKTRACK) $(HARMONY)
 
 $(BUILD)/%.o: $(SOURCES)/%.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -27,8 +28,11 @@ $(BUILD)/%.o: $(SOURCES)/%.cpp
 $(OUTPUT): $(OFILES)
 	$(CC) -o $@ $^
 
-$(SYMLINK): $(OUTPUT)
-	ln -s $(OUTPUT) $(SYMLINK)
+$(BACKTRACK): $(OUTPUT)
+	ln -s $(OUTPUT) $(BACKTRACK)
+
+$(HARMONY): $(OUTPUT)
+	ln -s $(OUTPUT) $(HARMONY)
 
 run: $(OUTPUT)
 	./$< boards.txt
