@@ -10,13 +10,17 @@ class HarmonySearch {
         double pitchAdjustmentRate = 0.1;
         int maximumImprovisations = 1000000;
         int*** harmonyMemory;
-        int** field;
+        int field[9][9];
 
     public:
         HarmonySearch(std::string str);
+        ~HarmonySearch();
         void initializeRandomly();
         int getObjectiveValue(int** harmony);
         int isValid(int** harmony);
+        void copySolution(int** destination, int** source);
+        void printSolution();
+        int** getBestSolution();
         void solve();
 };
 

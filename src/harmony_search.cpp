@@ -1,30 +1,89 @@
 #include <stdlib.h>
-#include <stdio.h>
+#include <iostream>
+#include <time.h>
 #include "harmony_search.h"
 
 HarmonySearch::HarmonySearch(std::string str) {
-    
+    harmonyMemory = new int**[harmonyMemorySize];
+
+    for (int i = 0; i < harmonyMemorySize; i++) {
+        harmonyMemory[i] = new int*[9];
+
+        for (int j = 0; j < 9; j++) {
+            harmonyMemory[i][j] = new int[9];
+        }
+    }
+
+    int row = 0;
+	int col = 0;
+
+	for (char const &c : str) {
+
+		int num = -1;
+		if (c >= '1' && c <= '9') {
+			num = c - '1' + 1;
+		}
+		else if (c == '.') {
+			num = 0;
+		}
+		else {
+			std::cerr << "unexpected character '" << c << "'" << std::endl;
+			return;
+		}
+
+		field[row][col] = num;
+
+		col++;
+		if (col > 8) {
+			col = 0;
+			row++;
+		}
+		if (row > 8) {
+			return;
+		}
+	}
+
 }
 
-void HarmonySearch::initializeRandomly(int** harmony, int** field) {
+HarmonySearch::~HarmonySearch() {
+    for (int i = 0; i < harmonyMemorySize; i++) {
+        for (int j = 0; j < 9; j++) {
+            delete[] harmonyMemory[i][j];
+        }
+        delete[] harmonyMemory[i];
+    }
+    delete[] harmonyMemory;
+
+    //TODO: Delete field
+}
+
+
+void HarmonySearch::initializeRandomly() {
+
+    srand(time(NULL));
     
-    for(int a=0; a<9; a++) {
-        
-        for(int b=0; b<9; b++) {
+    for (int i = 0; i < harmonyMemorySize; i++) {
+        int** harmony = harmonyMemory[i];
+        for(int a=0; a<9; a++) {
             
-            if(field[a][b] == 0) {
-            
-                harmony[a][b] = rand() % 9 + 1;
+            for(int b=0; b<9; b++) {
                 
-            } else {
+                if(field[a][b] == 0) {
                 
-                harmony[a][b] = field[a][b];
+                    harmony[a][b] = rand() % 9 + 1;
+                    
+                } else {
+                    
+                    harmony[a][b] = field[a][b];
+                    
+                }
                 
             }
             
         }
-        
     }
+
+    
     
 }
 
@@ -74,7 +133,7 @@ int HarmonySearch::getObjectiveValue(int** harmony) {
     
 }
 
-void copySolution(int** destination, int** source) {
+void HarmonySearch::copySolution(int** destination, int** source) {
     
     for(int a=0; a<9; a++) {
         
@@ -146,7 +205,8 @@ int HarmonySearch::isValid(int** harmony) {
     
 }
 
-void printSolution(int** harmony) {
+void HarmonySearch::printSolution() {
+    int** harmony = getBestSolution();
     
     for(int a=0; a<9; a++) {
         
@@ -159,282 +219,144 @@ void printSolution(int** harmony) {
         printf("\n");
         
     }
-    
+}
+
+int** HarmonySearch::getBestSolution() {
+    int bestObjectiveValue = 10000;
+    int bestIndex = 0;
+
+    for(int a=0; a<harmonyMemorySize; a++) {
+
+        int tempObjectiveValue = getObjectiveValue(harmonyMemory[a]);
+
+        if(tempObjectiveValue < bestObjectiveValue) {
+
+            bestObjectiveValue = tempObjectiveValue;
+            bestIndex = a;
+
+        }
+
+    }
+
+    return harmonyMemory[bestIndex];
 }
 
 void HarmonySearch::solve() {
 
-    // parameters
-    
-    // long randomSeed = atol(argv[1]);
+    int bestObjectiveValue = 10000;
+    int* objectiveValue = new int[harmonyMemorySize];
 
-    // int harmonyMemorySize = atoi(argv[2]);
+    for(int a=0; a<harmonyMemorySize; a++) {
 
-    // double harmonyMemoryConsiderationRate = atof(argv[3]);
-    
-    // double pitchAdjustmentRate = atof(argv[4]);
-    
-    // int maximumImprovisations = 1000000;
-    
-    // int runs = atoi(argv[5]);
-    
-    // printf("********* parameters ********\n");
-    
-    // printf("random seed: %ld\n", randomSeed);
-    
-    // printf("harmony memory size: %d\n", harmonyMemorySize);
-    
-    // printf("harmony memory conisderation rate: %.2lf\n", harmonyMemoryConsiderationRate);
-    
-    // printf("pitch adjustment rate: %.2lf\n", pitchAdjustmentRate);
-    
-    // printf("maximum improvisations: %d\n", maximumImprovisations);
-    
-    // printf("runs: %d\n\n", runs);
-    
-    srand(randomSeed);
-    
-    // int averageIterations = 0;
-    
-    // int terminatedWithin10k = 0;
-    // int terminatedWithin100k = 0;
-    // int terminatedWithin1000k = 0;
+        initializeRandomly();
+        objectiveValue[a] = getObjectiveValue(harmonyMemory[a]);
 
-    // int feasibleWithin10k = 0;
-    // int feasibleWithin100k = 0;
-    // int feasibleWithin1000k = 0;
+        if(objectiveValue[a] < bestObjectiveValue) {
 
-    // double time10k = 0.0;
-    // double time100k = 0.0;
-    // double time1000k = 0.0;
-    
-    for(int u=0; u<runs; u++) {
-    
-        // initialization
+            bestObjectiveValue = objectiveValue[a];
+
+        }
+
+    }
+
+    int** newHarmony = new int*[9];    
+    for(int a=0; a<9; a++) newHarmony[a] = new int[9];
+
+    // algorithm
+
+    for(int a=0; a<maximumImprovisations; a++) {
         
-        // Timer* timer = new Timer();
-        
-        // timer->startTimer();
+        for(int b=0; b<9; b++) {
 
-        int** field = new int*[9];    
+            for(int c=0; c<9; c++) {
 
-        for(int a=0; a<9; a++) {
+                if(field[b][c] == 0) {
 
-            field[a] = new int[9];
+                    if((double)rand() / (double)RAND_MAX < harmonyMemoryConsiderationRate) {
 
-            for(int b=0; b<9; b++) field[a][b] = 0;
+                        newHarmony[b][c] = harmonyMemory[rand() % harmonyMemorySize][b][c];
 
-        }
+                        if((double)rand() / (double)RAND_MAX < pitchAdjustmentRate) {
 
-        field[0][1] = 5;
-        field[0][3] = 3;
-        field[0][5] = 6;
-        field[0][8] = 7;
-        field[1][4] = 8;
-        field[1][5] = 5;
-        field[1][7] = 2;
-        field[1][8] = 4;    
-        field[2][1] = 9;
-        field[2][2] = 8;
-        field[2][3] = 4;
-        field[2][4] = 2;
-        field[2][6] = 6;
-        field[2][8] = 3;
-        field[3][0] = 9;
-        field[3][2] = 1;
-        field[3][5] = 3;
-        field[3][6] = 2;
-        field[3][8] = 6;
-        field[4][1] = 3;
-        field[4][7] = 1;
-        field[5][0] = 5;
-        field[5][2] = 7;
-        field[5][3] = 2;
-        field[5][4] = 6;
-        field[5][6] = 9;
-        field[5][8] = 8;
-        field[6][0] = 4;
-        field[6][2] = 5;
-        field[6][4] = 9;
-        field[6][6] = 3;
-        field[6][7] = 8;
-        field[7][1] = 1;
-        field[7][3] = 5;
-        field[7][4] = 7;
-        field[7][8] = 2;
-        field[8][0] = 8;
-        field[8][3] = 1;
-        field[8][5] = 4;
-        field[8][7] = 7;
+                            if(rand() % 2 == 0) {
 
-        int*** harmonyMemory = new int**[harmonyMemorySize];
-        for(int a=0; a<harmonyMemorySize; a++) {
-            harmonyMemory[a] = new int*[9];
-            for(int b=0; b<9; b++) harmonyMemory[a][b] = new int[9];
-        }
+                                if(newHarmony[b][c] != 9) newHarmony[b][c]++;
 
-        int bestObjectiveValue = 10000;
-        int* objectiveValue = new int[harmonyMemorySize];
+                            } else {
 
-        for(int a=0; a<harmonyMemorySize; a++) {
-
-            initializeRandomly(harmonyMemory[a], field);
-            objectiveValue[a] = getObjectiveValue(harmonyMemory[a]);
-
-            if(objectiveValue[a] < bestObjectiveValue) {
-
-                bestObjectiveValue = objectiveValue[a];
-
-            }
-
-        }
-
-        int** newHarmony = new int*[9];    
-        for(int a=0; a<9; a++) newHarmony[a] = new int[9];
-
-        // algorithm
-
-        for(int a=0; a<maximumImprovisations; a++) {
-            
-            for(int b=0; b<9; b++) {
-
-                for(int c=0; c<9; c++) {
-
-                    if(field[b][c] == 0) {
-
-                        if((double)rand() / (double)RAND_MAX < harmonyMemoryConsiderationRate) {
-
-                            newHarmony[b][c] = harmonyMemory[rand() % harmonyMemorySize][b][c];
-
-                            if((double)rand() / (double)RAND_MAX < pitchAdjustmentRate) {
-
-                                if(rand() % 2 == 0) {
-
-                                    if(newHarmony[b][c] != 9) newHarmony[b][c]++;
-
-                                } else {
-
-                                    if(newHarmony[b][c] != 1) newHarmony[b][c]--;
-
-                                }
+                                if(newHarmony[b][c] != 1) newHarmony[b][c]--;
 
                             }
-
-                        } else {
-
-                            newHarmony[b][c] = rand() % 9 + 1;
 
                         }
 
                     } else {
 
-                        newHarmony[b][c] = field[b][c];
+                        newHarmony[b][c] = rand() % 9 + 1;
 
                     }
 
-                }
+                } else {
 
-            }
-
-            int newObjectiveValue = getObjectiveValue(newHarmony);
-
-            int worstObjectiveValue = objectiveValue[0];
-            int worstIndex = 0;
-
-            for(int b=1; b<harmonyMemorySize; b++) {
-
-                if(objectiveValue[b] > worstObjectiveValue) {
-
-                    worstObjectiveValue = objectiveValue[b];
-                    worstIndex = b;
+                    newHarmony[b][c] = field[b][c];
 
                 }
 
             }
 
-            if(worstObjectiveValue > newObjectiveValue) {
+        }
 
-                copySolution(harmonyMemory[worstIndex], newHarmony);
+        int newObjectiveValue = getObjectiveValue(newHarmony);
 
-                objectiveValue[worstIndex] = newObjectiveValue;
+        int worstObjectiveValue = objectiveValue[0];
+        int worstIndex = 0;
 
-                if(newObjectiveValue < bestObjectiveValue) {
+        for(int b=1; b<harmonyMemorySize; b++) {
 
-                    bestObjectiveValue = newObjectiveValue;
+            if(objectiveValue[b] > worstObjectiveValue) {
 
-                    if(newObjectiveValue == 0) {
+                worstObjectiveValue = objectiveValue[b];
+                worstIndex = b;
 
-                        if(a < 10000) terminatedWithin10k++;
-                        if(a < 100000) terminatedWithin100k++;
-                        if(a < 1000000) terminatedWithin1000k++;
-                        
-                        averageIterations += a + 1;
-                        
-                        if(isValid(newHarmony)) {
+            }
 
-                            if(a < 10000) feasibleWithin10k++;
-                            if(a < 100000) feasibleWithin100k++;
-                            if(a < 1000000) feasibleWithin1000k++;
+        }
 
-                        }
-                        
+        if(worstObjectiveValue > newObjectiveValue) {
+
+            copySolution(harmonyMemory[worstIndex], newHarmony);
+
+            objectiveValue[worstIndex] = newObjectiveValue;
+
+            if(newObjectiveValue < bestObjectiveValue) {
+
+                bestObjectiveValue = newObjectiveValue;
+
+                if(newObjectiveValue == 0) {
+                    
+                    if(isValid(newHarmony)) {
+
                     }
-
+                    
                 }
 
             }
-            
-            if(a == 9999) time10k += timer->getElapsedTime();
-            if(a == 99999) time100k += timer->getElapsedTime();
-            if(a == 999999) time1000k += timer->getElapsedTime();
 
         }
 
-        // cleanup
-
-        for(int a=0; a<9; a++) delete[] field[a];   
-        delete[] field;
-
-        for(int a=0; a<harmonyMemorySize; a++) {
-
-            for(int b=0; b<9; b++) delete[] harmonyMemory[a][b];        
-            delete[] harmonyMemory[a];
-
-        }
-
-        delete[] harmonyMemory;
-
-        delete[] objectiveValue;
-
-        for(int a=0; a<9; a++) delete[] newHarmony[a];
-        delete[] newHarmony;
-
-        delete timer;
-        
     }
+
+    // cleanup
+
+    delete[] objectiveValue;
+
+    for(int a=0; a<9; a++) delete[] newHarmony[a];
+    delete[] newHarmony;
     
-    // summary
+    // return value return true/false?
+
     
-    printf("********** results **********\n\n");
-    
-    printf("terminated within 10000 iterations: %d / %d\n", terminatedWithin10k, runs);
-    printf("feasible within 10000 iterations: %d / %d\n", feasibleWithin10k, runs);
-    printf("average time for 10000 iterations: %.2lf\n\n", time10k / runs);
-    
-    printf("terminated within 100000 iterations: %d / %d\n", terminatedWithin100k, runs);
-    printf("feasible within 100000 iterations: %d / %d\n", feasibleWithin100k, runs);
-    printf("average time for 100000 iterations: %.2lf\n\n", time100k / runs);
-    
-    printf("terminated within 1000000 iterations: %d / %d\n", terminatedWithin1000k, runs);
-    printf("feasible within 1000000 iterations: %d / %d\n", feasibleWithin1000k, runs);
-    printf("average time for 1000000 iterations: %.2lf\n\n", time1000k / runs);
-    
-    if(terminatedWithin1000k == 0) printf("average iterations until termination: ---\n");
-    else printf("average iterations until termination: %d\n", averageIterations / terminatedWithin1000k);
-    
-    printf("\n\n\n");
-    
-    return 0;
+    return;
     
 }
 
