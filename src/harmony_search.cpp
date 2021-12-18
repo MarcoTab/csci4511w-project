@@ -23,7 +23,7 @@ HarmonySearch::HarmonySearch(std::string str) {
 		if (c >= '1' && c <= '9') {
 			num = c - '1' + 1;
 		}
-		else if (c == '.') {
+		else if (c == '0') {
 			num = 0;
 		}
 		else {

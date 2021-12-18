@@ -8,7 +8,7 @@ HARMONY := ./harmony
 CFILES := $(wildcard $(SOURCES)/*.cpp)
 OFILES := $(CFILES:$(SOURCES)/%.cpp=$(BUILD)/%.o)
 IDIR := include
-CFLAGS += -I $(IDIR)
+CFLAGS += -I $(IDIR) -O3 -funroll-loops
 
 CC := g++
 
