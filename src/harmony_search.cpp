@@ -53,8 +53,6 @@ HarmonySearch::~HarmonySearch() {
         delete[] harmonyMemory[i];
     }
     delete[] harmonyMemory;
-
-    //TODO: Delete field
 }
 
 

@@ -5,10 +5,12 @@
 #include <time.h>
 #include "sudoku.h"
 #include "sudoku_solver.h"
+#include "harmony_search.h"
 
 enum algs {
 	DLX,
-	BACKTRACK
+	BACKTRACK,
+    HARMONY
 };
 
 int main(int argc, char **argv) {
@@ -27,6 +29,9 @@ int main(int argc, char **argv) {
 	else if (fname.find("dlx") != std::string::npos) {
 		alg = DLX;
 	}
+    else if (fname.find("harmony") != std::string::npos) {
+        alg = HARMONY;
+    }
 	else {
 		std::cerr << "invalid algorithm selected" << std::endl;
 		exit(EXIT_FAILURE);
@@ -45,6 +50,7 @@ int main(int argc, char **argv) {
 		s.board_from_string(line);
 		s.to_char_array(data);
 		sudoku_GJK::Sudoku<3> sdku(data);
+        HarmonySearch hs(data);
 		
 		switch (alg) {
 			case DLX:
@@ -68,6 +74,19 @@ int main(int argc, char **argv) {
 					exit(EXIT_FAILURE);
 				}
 				break;
+            
+            case HARMONY:
+                startTime = clock();
+                hs.solve();
+                endTime = clock();
+                runTimes.push_back(endTime-startTime);
+                if (hs.isValid(hs.getBestSolution())) {
+                    std::cout << "Solution found\n" << std::flush;
+                    hs.printSolution();
+                }
+                else 
+                    std::cout << "Solution not found\n" << std::flush;
+                break;
 
 			default:
 				std::cerr << "invalid algorithm selected" << std::endl;
@@ -85,6 +104,8 @@ int main(int argc, char **argv) {
 		case BACKTRACK:
 			datafname = std::string("output/data-backtrack.csv");
 			break;
+        case HARMONY:
+            datafname = std::string("output/data-harmony.csv");
 	}
 
 	csv.open(datafname, std::ios_base::app);
