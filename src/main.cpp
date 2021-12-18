@@ -62,11 +62,15 @@ int main(int argc, char **argv) {
 				exit(EXIT_FAILURE);
 		}
 		s.print();
+		if (!s.validate()) {
+			std::cerr << "failed to validate" << std::endl;
+			exit(EXIT_FAILURE);
+		}
 	}
 
 	// save times to file
 	std::ofstream csv;
-	csv.open("data.csv", std::ios_base::app);
+	csv.open("./output/data.csv", std::ios_base::app);
 	line = "";
 	line.append(argv[0]);
 	line.append(",");

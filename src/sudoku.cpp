@@ -11,6 +11,14 @@ Sudoku::Sudoku() {
 
 bool Sudoku::validate() {
 
+	for (int i = 0; i < ROWS; i++) {
+		for (int j = 0; j < COLUMNS; j++) {
+			if (board[i][j] == 0) {
+				return false;
+			}
+		}
+	}
+
 	//check all rows for unique values
 	for (int i = 0; i < ROWS; i++) {
 
@@ -25,8 +33,8 @@ bool Sudoku::validate() {
 					return false;
 				}
 			}
-		} // end for
-	} //end for
+		}
+	}
 
 	//check all columns for unique values
 	for (int j = 0; j < COLUMNS; j++) {
@@ -42,8 +50,8 @@ bool Sudoku::validate() {
 					return false;
 				}
 			}
-		} // end for
-	} //end for
+		}
+	}
 
 	// divide the board into 9 squares and check each for unique values
 	for (int startRow = 0; startRow < ROWS; startRow += (ROWS / 3)) {
@@ -61,10 +69,10 @@ bool Sudoku::validate() {
 							return false;
 						}
 					}
-				} // end for
-			} // end for
-		} // end for
-	} // end for
+				}
+			}
+		}
+	}
 
 	return true;
 }

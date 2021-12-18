@@ -11,9 +11,6 @@
 class Sudoku {
 	public:
 		char board[ROWS][COLUMNS];
-		enum sudoku_ret {
-			SUDOKU_ERROR
-		};
 
 		Sudoku();
 

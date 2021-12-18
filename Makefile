@@ -32,3 +32,9 @@ $(SYMLINK): $(OUTPUT)
 
 run: $(OUTPUT)
 	./$< boards.txt
+
+testbacktrack: ./backtrack
+	./backtrack ./input/random-small
+
+testdlx: ./dlx
+	./dlx ./input/random-small
