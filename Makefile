@@ -38,10 +38,34 @@ run: $(OUTPUT)
 	./$< boards.txt
 
 testbacktrack: ./backtrack
-	./backtrack ./input/random-small
+	./backtrack input/random_17 > /dev/null
+	./backtrack input/random_18-22 > /dev/null
+	./backtrack input/random_23 > /dev/null
+	./backtrack input/random_24 > /dev/null
+	./backtrack input/random_25 > /dev/null
+	./backtrack input/random_26 > /dev/null
+	./backtrack input/random_27 > /dev/null
+	./backtrack input/random_28 > /dev/null
+	./backtrack input/random_easy > /dev/null
 
 testdlx: ./dlx
-	./dlx ./input/random-small
+	./dlx input/random_17 > /dev/null
+	./dlx input/random_18-22 > /dev/null
+	./dlx input/random_23 > /dev/null
+	./dlx input/random_24 > /dev/null
+	./dlx input/random_25 > /dev/null
+	./dlx input/random_26 > /dev/null
+	./dlx input/random_27 > /dev/null
+	./dlx input/random_28 > /dev/null
+	./dlx input/random_easy > /dev/null
 
 testharm: ./harmony
-	./harmony ./input/random-small
+	./harmony input/random_17 > /dev/null
+	./harmony input/random_18-22 > /dev/null
+	./harmony input/random_23 > /dev/null
+	./harmony input/random_24 > /dev/null
+	./harmony input/random_25 > /dev/null
+	./harmony input/random_26 > /dev/null
+	./harmony input/random_27 > /dev/null
+	./harmony input/random_28 > /dev/null
+	./harmony input/random_easy > /dev/null
