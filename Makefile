@@ -74,8 +74,20 @@ testharm: ./harmony
 	./harmony input/random_28 > /dev/null
 	./harmony input/random_easy > /dev/null
 
-testsimanneal: ./simanneal
-	./simanneal input/random-small
+testsimanneal: ./sudoku_stochastic/apps/sudoku_sa
+	./sudoku_stochastic/apps/sudoku_sa /sudoku_stochastic/input/random_small
+	# ./simanneal input/random_17 > /dev/null
+	# ./simanneal input/random_18-22 > /dev/null
+	# ./simanneal input/random_23 > /dev/null
+	# ./simanneal input/random_24 > /dev/null
+	# ./simanneal input/random_25 > /dev/null
+	# ./simanneal input/random_26 > /dev/null
+	# ./simanneal input/random_27 > /dev/null
+	# ./simanneal input/random_28 > /dev/null
+	# ./simanneal input/random_easy > /dev/null
+
+testbhill: ./sudoku_stochastic/apps/sudoku_bhc
+	./sudoku_stochastic/apps/sudoku_bhc easy_board
 	# ./simanneal input/random_17 > /dev/null
 	# ./simanneal input/random_18-22 > /dev/null
 	# ./simanneal input/random_23 > /dev/null

@@ -56,7 +56,7 @@ namespace vorpal::gensudoku {
         constexpr explicit GenSudokuBoard(const std::string_view &sv) {
             if (sv.size() != BoardSize)
                 throw std::invalid_argument((boost::format("board must be represented by string of length %1% "
-                                                          "(length %2% provided)") % NN % sv.size()).str());
+                                                          "(length %2% provided) %3%") % BoardSize % sv.size() % sv).str());
 
             for (size_t i = 0; i < BoardSize; ++i) {
 				contents[i] = fromBase36(sv[i]);
