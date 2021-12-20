@@ -27,11 +27,12 @@ using namespace vorpal::stochastic;
 
 std::string to_zeros(std::string str) {
     std::string ret = "";
+	char tmp;
     for (const char& c : str) {
         if (c == '.') {
-            ret += '0';
+			ret += "0";
         } else {
-            ret += c;
+			ret += c;
         }
     }
     return ret;
@@ -41,6 +42,8 @@ int main(int argc, const char * const argv[]) {
     using solver = SimulatedAnnealingAlgorithm<SudokuBoard>;
     solver::options_type options;
 
+    std::ifstream infile;
+    infile.open(argv[1]);
     char * fake = "./sudoku_sa";
     argc = 1;
     argv = &fake;
@@ -62,15 +65,14 @@ int main(int argc, const char * const argv[]) {
         return 1;
     }
 
-    std::ifstream infile;
-    infile.open(argv[1]);
     std::string line;
     std::vector<clock_t> runTimes;
     clock_t startTime, endTime;
 
     while (std::getline(infile, line)) {
         std::cerr << line << "\n";
-        std::string_view board = std::string_view(to_zeros(line));
+        std::string board = std::string(to_zeros(line));
+		std::cerr << "board: " << board << "\n";
         options.populator = std::make_unique<SudokuBoardAscenderPopulator>(SudokuBoard(board));
 
         startTime = clock();
